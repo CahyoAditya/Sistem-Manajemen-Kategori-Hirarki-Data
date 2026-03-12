@@ -29,14 +29,13 @@ Buka terminal/Command Prompt, arahkan ke direktori proyek, lalu jalankan perinta
 
 **1. Proses Kompilasi**
 Disarankan menggunakan *flag* optimasi `-O2` agar hasil pengukuran waktu (*benchmarking*) lebih akurat dan stabil.
-```bash
-g++ -O2 main.cpp -o main
+```g++ -O2 main.cpp -o main```
 
 **2. Menjalankan Program**
 Untuk pengguna Windows:
-```main.exe
+```main.exe```
 Untuk pengguna Linux/macOS:
-```./main
+```./main```
 
 ## 📂 Struktur File
 main.cpp : Berisi source code utama sistem, logika struktur data, dan antarmuka CLI.
@@ -45,7 +44,7 @@ json.hpp : Library header-only untuk parsing data JSON.
 
 dataset_kategori.json : File basis data lokal yang otomatis terbuat/diperbarui oleh sistem untuk menyimpan struktur hierarki. (Catatan: Gunakan web generator terpisah untuk menghasilkan 10.000 dummy data awal).
 
-##👥 Tim Pengembang
+## 👥 Tim Pengembang
 Kelompok 10 - Struktur Data P4
 Departemen Ilmu Komputer
 Sekolah Sains Data, Matematika, dan Informatika
