@@ -45,22 +45,15 @@ json.hpp : Library header-only untuk parsing data JSON.
 dataset_kategori.json : File basis data lokal yang otomatis terbuat/diperbarui oleh sistem untuk menyimpan struktur hierarki.
 
 ## 👥 Tim Pengembang
-Kelompok 10 - Struktur Data P4
-
-Departemen Ilmu Komputer
-
-Sekolah Sains Data, Matematika, dan Informatika
-
+Kelompok 10 - Struktur Data P4  
+Departemen Ilmu Komputer  
+Sekolah Sains Data, Matematika, dan Informatika  
 IPB University - 2026
 
-
-Aditya Cahyo Nugroho (M0403241109)
-
-Zivanka Aurellia Astadewi Maheswari (M0403241111)
-
-Anisa Nur Rohmah (M0403241035)
-
-Nazwa Nadya Rahma (M0403241060)
+Aditya Cahyo Nugroho (M0403241109)  
+Zivanka Aurellia Astadewi Maheswari (M0403241111)  
+Anisa Nur Rohmah (M0403241035)  
+Nazwa Nadya Rahma (M0403241060)  
 
 
 **Saran Tambahan Saat Demo:**
