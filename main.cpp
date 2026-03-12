@@ -9,6 +9,7 @@
 using namespace std;
 using json = nlohmann::json;
 
+// Inisialisasi Node
 struct Category
 {
     string id;
@@ -19,9 +20,12 @@ struct Category
     vector<string> child_ids;
 };
 
+// Bungkus semua function di dalam class
 class CategoryMapManager
 {
 private:
+    // Kenapa di dalam class? karena perlu unordered_map 
+    // yang bisa diakses semua function
     unordered_map<string, Category> categoryMap;
     unordered_map<string, string> nameToIdMap;
     string dbFile = "dataset_kategori.json";
@@ -54,9 +58,11 @@ private:
         categoryMap.erase(id);
     }
 
+
 public:
     void printTree(string root_id, string indent)
     {
+        // Base case
         if (categoryMap.count(root_id) == 0 || categoryMap[root_id].is_active == false)
             return;
 
@@ -66,6 +72,8 @@ public:
         for (int i = 0; i < cat.child_ids.size(); i++)
         {
             string child_id = cat.child_ids[i];
+
+            // Rekursif dan indensasi
             printTree(child_id, indent + "    ");
         }
     }
@@ -128,8 +136,9 @@ public:
     // 1. Insert Kategori
     void insertCategory(string id, string name, string parent_id)
     {
-        auto start_insert = chrono::high_resolution_clock::now();
+        auto start_insert = chrono::high_resolution_clock::now();   // Hanya timer, nothing special
 
+        // Base case untuk ID sudah ada
         if (categoryMap.count(id) > 0)
         {
             cout << "Error: ID Kategori sudah ada!\n";
@@ -140,6 +149,7 @@ public:
 
         if (parent_id != "")
         {
+            // Base case masuk ke Parent
             if (categoryMap.count(parent_id) > 0)
             {
                 categoryMap[parent_id].child_ids.push_back(id);
@@ -156,7 +166,7 @@ public:
         categoryMap[id] = newCat;
         nameToIdMap[name] = id;
 
-        auto end_insert = chrono::high_resolution_clock::now();
+        auto end_insert = chrono::high_resolution_clock::now();     // Matiin timer, nothing special tbh
         chrono::duration<double, std::milli> duration_insert = end_insert - start_insert;
 
         cout << "Sukses: Kategori ditambahkan.\n";
@@ -266,6 +276,7 @@ int main()
 
         cin >> choice;
 
+        // Validasi agar terminal tidak looping tak terbatas jika diinput huruf
         if (cin.fail())
         {
             cin.clear();
