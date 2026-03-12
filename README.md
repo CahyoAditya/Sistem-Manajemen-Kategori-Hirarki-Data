@@ -42,7 +42,7 @@ main.cpp : Berisi source code utama sistem, logika struktur data, dan antarmuka 
 
 json.hpp : Library header-only untuk parsing data JSON.
 
-dataset_kategori.json : File basis data lokal yang otomatis terbuat/diperbarui oleh sistem untuk menyimpan struktur hierarki. (Catatan: Gunakan web generator terpisah untuk menghasilkan 10.000 dummy data awal).
+dataset_kategori.json : File basis data lokal yang otomatis terbuat/diperbarui oleh sistem untuk menyimpan struktur hierarki.
 
 ## 👥 Tim Pengembang
 Kelompok 10 - Struktur Data P4
