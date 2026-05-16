@@ -1,0 +1,16 @@
+operasi,ukuran_data,hashmap_ms,pointer_ms
+Build,1000 node,2.59272,3.41598
+Insert,1000 node,0.008308,0.003395
+Search,1000 node,0.001085,0.000434
+Traversal,1000 node,0.681344,0.021437
+Delete,1000 node,12.3672,1.4772
+Build,5000 node,9.01145,30.1933
+Insert,5000 node,0.007599,0.005742
+Search,5000 node,0.000906,0.000348
+Traversal,5000 node,2.86664,0.120566
+Delete,5000 node,140.044,5.1837
+Build,10000 node,18.8456,119.381
+Insert,10000 node,0.008223,0.005836
+Search,10000 node,0.001053,0.00032
+Traversal,10000 node,6.71695,0.260929
+Delete,10000 node,565.496,15.8025

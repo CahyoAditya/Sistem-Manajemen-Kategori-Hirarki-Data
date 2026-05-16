@@ -10,12 +10,16 @@ Sistem ini dirancang untuk menguji, memanipulasi, dan membandingkan performa str
 3. **Penelusuran Pohon (Tree Traversal):** Menampilkan struktur turunan kategori (subkategori) dalam bentuk visual pohon menggunakan algoritma *Depth-First Search* (DFS).
 4. **Penghapusan Berantai (Cascading Delete):** Menghapus sebuah kategori beserta **seluruh** anak dan turunannya secara rekursif agar tidak ada *orphan data*.
 5. **Benchmarking Terintegrasi:** Dilengkapi dengan *timer* presisi tinggi (`<chrono>`) untuk mengukur waktu eksekusi operasi di memori secara seketika (Waktu Insert, Waktu Search, Waktu Traversal, dan Waktu Delete).
+6. **Perbandingan Dua Struktur Data:** Program kini mendukung analisis perbandingan antara
+   - `Hash Map + Adjacency List`
+   - `Pointer Tree` dengan pola *Left-Child Right-Sibling* (LCRS)
 
 ## 🧠 Struktur Data yang Digunakan
-Sistem ini menggunakan struktur data **N-ary Tree yang direpresentasikan melalui Hash Map dan Adjacency List**.
-* **Hash Map Utama (`std::unordered_map`):** Digunakan untuk menyimpan seluruh *node* kategori. *Key* berupa ID Kategori, dan *Value* berupa Objek Kategori. Memungkinkan akses data acak yang sangat cepat $O(1)$.
-* **Indeks Resolusi Nama (`std::unordered_map`):** Hash map sekunder untuk memetakan Nama Kategori ke ID Kategori.
-* **Adjacency List (`std::vector<string>`):** Disematkan di dalam setiap objek kategori untuk menyimpan daftar ID anak-anaknya (*child_ids*). Digunakan untuk menelusuri hierarki dari atas ke bawah.
+Sistem ini menggunakan dua pendekatan utama untuk merepresentasikan N-ary tree:
+* **Hash Map + Adjacency List:** Struktur data utama awal, menggunakan `std::unordered_map` untuk indeks node dan `std::vector<string>` untuk menyimpan daftar anak.
+* **Pointer Tree (LCRS):** Struktur data kedua yang merepresentasikan hubungan parent-child secara langsung dengan `CategoryNode* firstChild` dan `CategoryNode* nextSibling`.
+
+Kedua pendekatan ini ditujukan untuk membandingkan performa operasi traversal, pencarian, dan delete secara empiris.
 
 ## 🛠️ Prasyarat (Prerequisites)
 Untuk melakukan kompilasi dan menjalankan program ini, pastikan sistem Anda memiliki:
@@ -54,7 +58,3 @@ Aditya Cahyo Nugroho (M0403241109)
 Zivanka Aurellia Astadewi Maheswari (M0403241111)  
 Anisa Nur Rohmah (M0403241035)  
 Nazwa Nadya Rahma (M0403241060)  
-
-
-**Saran Tambahan Saat Demo:**
-Ingatlah untuk selalu menggunakan perintah `g++ -O2 main.cpp -o main` saat men-*compile* program sebelum mengambil data eksperimen untuk laporan Anda. *Flag* `-O2` akan menyuruh *compiler* untuk mengoptimalkan memori dan kecepatan prosesor secara maksimal, sehingga angka `<chrono>` yang Anda dapatkan benar-benar menunjukkan performa murni struktur datanya.
