@@ -42,6 +42,14 @@ string repeatChar(char c, int count)
     return string(max(0, count), c);
 }
 
+string repeatString(const string &s, int count)
+{
+    string result;
+    for (int i = 0; i < count; ++i)
+        result += s;
+    return result;
+}
+
 string trim(const string &value)
 {
     size_t start = 0;
@@ -104,24 +112,79 @@ void printSeparator(char ch = '=', int width = 64)
     cout << repeatChar(ch, width) << "\n";
 }
 
+string getBoxTopBorder()
+{
+    if (supportsUtf8())
+        return string("╔") + repeatString("═", 62) + string("╗");
+    return "+" + repeatChar('=', 62) + "+";
+}
+
+string getBoxBottomBorder()
+{
+    if (supportsUtf8())
+        return string("╚") + repeatString("═", 62) + string("╝");
+    return "+" + repeatChar('=', 62) + "+";
+}
+
+string getBoxMidSeparator()
+{
+    if (supportsUtf8())
+        return string("╠") + repeatString("═", 62) + string("╣");
+    return "+" + repeatChar('=', 62) + "+";
+}
+
+string getBoxLine(const string &content)
+{
+    string border = supportsUtf8() ? "║" : "|";
+    int contentLen = content.length();
+    int padding = max(0, 62 - contentLen);
+    int padLeft = padding / 2;
+    int padRight = padding - padLeft;
+    return border + repeatChar(' ', padLeft) + content + repeatChar(' ', padRight) + border;
+}
+
+void printBoxedContent(const vector<string> &lines)
+{
+    cout << getBoxTopBorder() << "\n";
+    for (const string &line : lines)
+    {
+        string border = supportsUtf8() ? "║" : "|";
+        int contentLen = line.length();
+        int padding = max(0, 62 - contentLen);
+        int padRight = padding;
+        cout << border << " " << left << setw(61) << line << border << "\n";
+    }
+    cout << getBoxBottomBorder() << "\n";
+}
+
 void printHeader(StructureType active, size_t nodeCount, double loadTimeMs, const string &fileName)
 {
-    printSeparator('=');
-    cout << "  SISTEM MANAJEMEN KATEGORI & HIRARKI DATA" << "\n";
-    printSeparator('=');
-    cout << "  Struktur Aktif : " << kStructureNames[static_cast<int>(active)] << "\n";
-    cout << "  Node Termuat   : " << nodeCount << "\n";
-    cout << "  Waktu Load     : " << fixed << setprecision(2) << loadTimeMs << " ms\n";
+    cout << "\n";
+    vector<string> lines;
+    lines.push_back("SISTEM MANAJEMEN KATEGORI & HIRARKI DATA");
+    lines.push_back("Struktur Data P4 — Kelompok 10 — IPB University 2026");
+    printBoxedContent(lines);
+    
+    cout << getBoxTopBorder() << "\n";
+    string border = supportsUtf8() ? "║" : "|";
+    cout << border << "  Struktur Aktif : " << left << setw(43) << kStructureNames[static_cast<int>(active)] << border << "\n";
+    cout << border << "  Node Termuat   : " << left << setw(43) << nodeCount << border << "\n";
+    cout << border << "  Waktu Load     : " << fixed << setprecision(2) << left << setw(43) << (to_string(loadTimeMs) + " ms") << border << "\n";
     if (!fileName.empty())
-        cout << "  Dataset file   : " << fileName << "\n";
-    printSeparator('=');
+    {
+        cout << border << "  Dataset file   : " << left << setw(43) << fileName << border << "\n";
+    }
+    cout << getBoxBottomBorder() << "\n";
 }
 
 void printMenuTitle(const string &title)
 {
-    printSeparator('=');
-    cout << "  [" << title << "]" << "\n";
-    printSeparator('=');
+    cout << "\n";
+    cout << getBoxTopBorder() << "\n";
+    string border = supportsUtf8() ? "║" : "|";
+    string titleLine = "  [" + title + "]";
+    cout << border << " " << left << setw(61) << titleLine << border << "\n";
+    cout << getBoxBottomBorder() << "\n";
 }
 
 void printMetric(const string &name, double ms)
@@ -142,6 +205,29 @@ void printError(const string &message)
 void printWarning(const string &message)
 {
     cout << "  ! " << message << "\n";
+}
+
+void printMenuItems(const vector<string> &items)
+{
+    cout << "\n";
+    for (const string &item : items)
+    {
+        cout << item << "\n";
+    }
+    cout << "\n";
+}
+
+void printMenuItemsBoxed(const vector<string> &items)
+{
+    cout << getBoxTopBorder() << "\n";
+    string border = supportsUtf8() ? "║" : "|";
+    for (const string &item : items)
+    {
+        int contentLen = item.length();
+        int padding = max(0, 62 - contentLen);
+        cout << border << " " << left << setw(61) << item << border << "\n";
+    }
+    cout << getBoxBottomBorder() << "\n";
 }
 
 size_t estimateMemoryUsageKB(size_t nodeCount)
@@ -1322,11 +1408,14 @@ void benchmarkMenu()
 {
     vector<string> datasetFiles = {"dataset_1000.json", "dataset_5000.json", "dataset_10000.json"};
     printMenuTitle("BENCHMARK & PERBANDINGAN");
-    cout << "  [1] Benchmark Struktur Aktif\n";
-    cout << "  [2] Benchmark Kedua Struktur (side-by-side)\n";
-    cout << "  [3] Ekspor Hasil ke CSV\n";
-    cout << "  [0] Kembali\n";
-    cout << "\n  Pilihan: ";
+    vector<string> benchmarkItems = {
+        "[1] Benchmark Struktur Aktif",
+        "[2] Benchmark Kedua Struktur (side-by-side)",
+        "[3] Ekspor Hasil ke CSV",
+        "[0] Kembali"
+    };
+    printMenuItemsBoxed(benchmarkItems);
+    cout << "  Pilihan: ";
     int choice = getMenuChoice(0, 3);
 
     if (choice == 1)
@@ -1412,26 +1501,34 @@ int main()
     while (running)
     {
         printHeader(state.activeStructure, state.nodeCount, state.loadTimeMs, state.activeFile);
-        cout << "  [1] Pilih Struktur Data\n";
-        cout << "  [2] Manajemen Kategori\n";
-        cout << "  [3] Benchmark & Perbandingan\n";
-        cout << "  [4] Dataset\n";
-        cout << "  [0] Keluar\n";
-        cout << "\n  Pilih menu: ";
+        cout << "\n";
+        cout << getBoxTopBorder() << "\n";
+        string border = supportsUtf8() ? "║" : "|";
+        cout << border << "  [1] Pilih Struktur Data" << repeatChar(' ', 37) << border << "\n";
+        cout << border << "  [2] Manajemen Kategori" << repeatChar(' ', 38) << border << "\n";
+        cout << border << "  [3] Benchmark & Perbandingan" << repeatChar(' ', 32) << border << "\n";
+        cout << border << "  [4] Dataset" << repeatChar(' ', 50) << border << "\n";
+        cout << border << "  [0] Keluar" << repeatChar(' ', 51) << border << "\n";
+        cout << getBoxBottomBorder() << "\n";
+        cout << "  Pilih menu: ";
 
         int choice = getMenuChoice(0, 4);
 
         if (choice == 1)
         {
             printMenuTitle("PILIH STRUKTUR DATA");
-            cout << "  [1] HashMap Tree\n";
-            cout << "      Deskripsi : N-ary Tree berbasis unordered_map + vector\n";
-            cout << "      Search    : O(1) | Insert : O(1) | Delete : O(K)\n";
-            cout << "  [2] Pointer Tree (LCRS)\n";
-            cout << "      Deskripsi : N-ary Tree berbasis pointer rekursif\n";
-            cout << "      Search    : O(n) / O(1)* | Insert : O(1)* | Delete : O(K)\n";
-            cout << "      *) dengan indeks sekunder\n";
-            cout << "\n  Pilihan saat ini: [" << (state.activeStructure == StructureType::HashMapTree ? 1 : 2) << "] " << kStructureNames[static_cast<int>(state.activeStructure)] << "\n";
+            vector<string> structMenuItems = {
+                "[1] HashMap Tree",
+                "    Deskripsi : N-ary Tree berbasis unordered_map + vector",
+                "    Search    : O(1) | Insert : O(1) | Delete : O(K)",
+                "",
+                "[2] Pointer Tree (LCRS)",
+                "    Deskripsi : N-ary Tree berbasis pointer rekursif",
+                "    Search    : O(n) / O(1)* | Insert : O(1)* | Delete : O(K)",
+                "    *) dengan indeks sekunder"
+            };
+            printMenuItemsBoxed(structMenuItems);
+            cout << "  Pilihan saat ini: [" << (state.activeStructure == StructureType::HashMapTree ? 1 : 2) << "] " << kStructureNames[static_cast<int>(state.activeStructure)] << "\n";
             cout << "  Masukkan pilihan (1/2): ";
             int structChoice = getMenuChoice(1, 2);
             StructureType selected = structChoice == 1 ? StructureType::HashMapTree : StructureType::PointerTree;
@@ -1453,12 +1550,15 @@ int main()
         else if (choice == 2)
         {
             printMenuTitle("MANAJEMEN KATEGORI");
-            cout << "  [1] Tambah Kategori\n";
-            cout << "  [2] Cari Kategori\n";
-            cout << "  [3] Tampilkan Hierarki\n";
-            cout << "  [4] Hapus Kategori\n";
-            cout << "  [0] Kembali\n";
-            cout << "\n  Pilihan: ";
+            vector<string> categMenuItems = {
+                "[1] Tambah Kategori",
+                "[2] Cari Kategori",
+                "[3] Tampilkan Hierarki",
+                "[4] Hapus Kategori",
+                "[0] Kembali"
+            };
+            printMenuItemsBoxed(categMenuItems);
+            cout << "  Pilihan: ";
             int subChoice = getMenuChoice(0, 4);
             if (subChoice == 1)
             {
@@ -1718,11 +1818,14 @@ int main()
         else if (choice == 4)
         {
             printMenuTitle("DATASET");
-            cout << "  [1] Load Dataset dari File\n";
-            cout << "  [2] Informasi Dataset Aktif\n";
-            cout << "  [3] Reset / Kosongkan Tree\n";
-            cout << "  [0] Kembali\n";
-            cout << "\n  Pilihan: ";
+            vector<string> datasetItems = {
+                "[1] Load Dataset dari File",
+                "[2] Informasi Dataset Aktif",
+                "[3] Reset / Kosongkan Tree",
+                "[0] Kembali"
+            };
+            printMenuItemsBoxed(datasetItems);
+            cout << "  Pilihan: ";
             int dataChoice = getMenuChoice(0, 3);
             if (dataChoice == 1)
             {
