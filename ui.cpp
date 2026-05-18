@@ -2,6 +2,7 @@
 #include <cstdlib>
 #ifdef _WIN32
 #include <direct.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #include <sys/stat.h>
@@ -9,8 +10,12 @@
 
 bool supportsUtf8()
 {
+#ifdef _WIN32
+    return GetConsoleOutputCP() == CP_UTF8;
+#else
     const char *lang = getenv("LANG");
     return lang != nullptr && string(lang).find("UTF-8") != string::npos;
+#endif
 }
 
 bool supportsColor()
@@ -302,11 +307,11 @@ void printBenchmarkSummary(const vector<BenchmarkResult> &results, const string 
 {
     printMenuTitle(title);
     cout << "  ╔═══════════════╦══════════════╦══════════════╦══════════════╦══════════════╦══════════════╗\n";
-    cout << "  ║ Dataset       ║ Build (ms)   ║ Insert (ms)  ║ Search (ms)  ║ Traversal(ms)║ Delete (ms)   ║\n";
+    cout << "  ║ Dataset       ║ Build (ms)   ║ Insert (ms)  ║ Search (ms)  ║ Traversal(ms)║ Delete (ms)  ║\n";
     cout << "  ╠═══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣\n";
     for (const auto &row : results)
     {
-        cout << "  ║ " << left << setw(13) << row.label
+        cout << " ║ " << left << setw(13) << row.label
              << " ║ " << right << setw(10) << fixed << setprecision(3) << row.build
              << " ║ " << setw(10) << row.insert
              << " ║ " << setw(10) << row.search
@@ -320,7 +325,7 @@ void printBenchmarkComparison(const BenchmarkResult &hashResult, const Benchmark
 {
     printMenuTitle("BENCHMARK PERBANDINGAN");
     cout << "  ╔══════════════╦════════════════════╦════════════════════╦══════════╗\n";
-    cout << "  ║ Operasi      ║ HashMap Tree (ms)  ║ Pointer Tree (ms)  ║ Selisih   ║\n";
+    cout << "  ║ Operasi      ║ HashMap Tree (ms)  ║ Pointer Tree (ms)  ║ Selisih  ║\n";
     cout << "  ╠══════════════╬════════════════════╬════════════════════╬══════════╣\n";
     auto printRow = [&](const string &label, double hashValue, double pointerValue) {
         double diff = pointerValue - hashValue;
