@@ -306,40 +306,85 @@ void printHierarchyUI(const AppState &state, const CategoryMapManager &hashManag
 void printBenchmarkSummary(const vector<BenchmarkResult> &results, const string &title)
 {
     printMenuTitle(title);
-    cout << "  ╔═══════════════╦══════════════╦══════════════╦══════════════╦══════════════╦══════════════╗\n";
-    cout << "  ║ Dataset       ║ Build (ms)   ║ Insert (ms)  ║ Search (ms)  ║ Traversal(ms)║ Delete (ms)  ║\n";
-    cout << "  ╠═══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣\n";
-    for (const auto &row : results)
+    if (supportsUtf8())
     {
-        cout << " ║ " << left << setw(13) << row.label
-             << " ║ " << right << setw(10) << fixed << setprecision(3) << row.build
-             << " ║ " << setw(10) << row.insert
-             << " ║ " << setw(10) << row.search
-             << " ║ " << setw(11) << row.traversal
-             << " ║ " << setw(11) << row.remove << " ║\n";
+        cout << "  ╔═══════════════╦══════════════╦══════════════╦══════════════╦══════════════╦══════════════╗\n";
+        cout << "  ║ Dataset       ║ Build (ms)   ║ Insert (ms)  ║ Search (ms)  ║ Traversal(ms)║ Delete (ms)  ║\n";
+        cout << "  ╠═══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣\n";
+        for (const auto &row : results)
+        {
+            cout << " ║ " << left << setw(13) << row.label
+                 << " ║ " << right << setw(10) << fixed << setprecision(3) << row.build
+                 << " ║ " << setw(10) << row.insert
+                 << " ║ " << setw(10) << row.search
+                 << " ║ " << setw(11) << row.traversal
+                 << " ║ " << setw(11) << row.remove << " ║\n";
+        }
+        cout << "  ╚═══════════════╩══════════════╩══════════════╩══════════════╩══════════════╩══════════════╝\n";
     }
-    cout << "  ╚═══════════════╩══════════════╩══════════════╩══════════════╩══════════════╩══════════════╝\n";
+    else
+    {
+        cout << "  +---------------+--------------+--------------+--------------+--------------+--------------+\n";
+        cout << "  | Dataset       | Build (ms)   | Insert (ms)  | Search (ms)  | Traversal(ms) | Delete (ms)  |\n";
+        cout << "  +---------------+--------------+--------------+--------------+--------------+--------------+\n";
+        for (const auto &row : results)
+        {
+            cout << " | " << left << setw(13) << row.label
+                 << " | " << right << setw(10) << fixed << setprecision(3) << row.build
+                 << " | " << setw(10) << row.insert
+                 << " | " << setw(10) << row.search
+                 << " | " << setw(11) << row.traversal
+                 << " | " << setw(11) << row.remove << " |\n";
+        }
+        cout << "  +---------------+--------------+--------------+--------------+--------------+--------------+\n";
+    }
 }
 
 void printBenchmarkComparison(const BenchmarkResult &hashResult, const BenchmarkResult &pointerResult)
 {
     printMenuTitle("BENCHMARK PERBANDINGAN");
-    cout << "  ╔══════════════╦════════════════════╦════════════════════╦══════════╗\n";
-    cout << "  ║ Operasi      ║ HashMap Tree (ms)  ║ Pointer Tree (ms)  ║ Selisih  ║\n";
-    cout << "  ╠══════════════╬════════════════════╬════════════════════╬══════════╣\n";
+    if (supportsUtf8())
+    {
+        cout << "  ╔══════════════╦════════════════════╦════════════════════╦══════════╗\n";
+        cout << "  ║ Operasi      ║ HashMap Tree (ms)  ║ Pointer Tree (ms)  ║ Selisih  ║\n";
+        cout << "  ╠══════════════╬════════════════════╬════════════════════╬══════════╣\n";
+    }
+    else
+    {
+        cout << "  +--------------+--------------------+--------------------+----------+\n";
+        cout << "  | Operasi      | HashMap Tree (ms)  | Pointer Tree (ms)  | Selisih  |\n";
+        cout << "  +--------------+--------------------+--------------------+----------+\n";
+    }
     auto printRow = [&](const string &label, double hashValue, double pointerValue) {
         double diff = pointerValue - hashValue;
-        cout << "  ║ " << left << setw(12) << label
-             << " ║ " << right << setw(18) << fixed << setprecision(3) << hashValue
-             << " ║ " << setw(18) << pointerValue
-             << " ║ " << setw(8) << showpos << fixed << setprecision(3) << diff << noshowpos << " ║\n";
+        if (supportsUtf8())
+        {
+            cout << " ║ " << left << setw(12) << label
+                 << " ║ " << right << setw(18) << fixed << setprecision(3) << hashValue
+                 << " ║ " << setw(18) << pointerValue
+                 << " ║ " << setw(8) << showpos << fixed << setprecision(3) << diff << noshowpos << " ║\n";
+        }
+        else
+        {
+            cout << " | " << left << setw(12) << label
+                 << " | " << right << setw(18) << fixed << setprecision(3) << hashValue
+                 << " | " << setw(18) << pointerValue
+                 << " | " << setw(8) << showpos << fixed << setprecision(3) << diff << noshowpos << " |\n";
+        }
     };
     printRow("Build", hashResult.build, pointerResult.build);
     printRow("Insert", hashResult.insert, pointerResult.insert);
     printRow("Search", hashResult.search, pointerResult.search);
     printRow("Traversal", hashResult.traversal, pointerResult.traversal);
     printRow("Delete", hashResult.remove, pointerResult.remove);
-    cout << "  ╚══════════════╩════════════════════╩════════════════════╩══════════╝\n";
+    if (supportsUtf8())
+    {
+        cout << "  ╚══════════════╩════════════════════╩════════════════════╩══════════╝\n";
+    }
+    else
+    {
+        cout << "  +--------------+--------------------+--------------------+----------+\n";
+    }
     cout << "\n  Keterangan Selisih: (+) Pointer Tree lebih lambat/besar, (-) lebih cepat/kecil\n";
 }
 
