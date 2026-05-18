@@ -13,6 +13,16 @@ Sistem ini mengimplementasikan dua pendekatan untuk merepresentasikan N-ary Tree
 ### 1. **Hash Map + Adjacency List** (HashMap Tree)
 Pendekatan berbasis pemetaan hash untuk indexing cepat.
 
+> 📚 **Referensi Kuliah & Praktikum:**
+> | Komponen | Pertemuan | Topik |
+> |---|---|---|
+> | `unordered_map` (Hash Map) | **Praktikum 7** | Tabel Hash & Hashing — konsep hash function, collision handling (Separate Chaining & Linear Probing), load factor |
+> | `vector<string> child_ids` (Adjacency List) | **Praktikum 1** | Review STL — penggunaan `vector`, iterator, dan container STL |
+> | `vector` dinamis sebagai list anak | **Praktikum 2** | Vector & Array — vector dinamis, `push_back()`, pengelolaan memori otomatis |
+> | Relasi induk-anak antar node | **Praktikum 8** | Struktur Data Graf — representasi graf dengan adjacency list/matrix |
+> | DFS untuk traversal & delete | **Praktikum 8 & 9** | Graf — algoritma DFS, deteksi cycle, penelusuran rekursif |
+> | `struct Category` | **Praktikum 1** | Review Struct — pengelompokan variabel dengan `struct` |
+
 **Struktur:**
 ```cpp
 struct Category {
@@ -21,11 +31,11 @@ struct Category {
     string parent_id;       // ID induk (parent)
     int level;              // Kedalaman di tree (root = 0)
     bool is_active;         // Status kategori
-    vector<string> child_ids;  // Daftar ID anak
+    vector<string> child_ids;  // Daftar ID anak  ← Praktikum 1 & 2 (STL vector)
 };
 
-unordered_map<string, Category> categoryMap;      // Mapping ID → Category
-unordered_map<string, string> nameToIdMap;        // Mapping Nama → ID
+unordered_map<string, Category> categoryMap;      // ← Praktikum 7 (Hash Table)
+unordered_map<string, string> nameToIdMap;        // ← Praktikum 7 (Hash Table)
 ```
 
 **Kompleksitas:**
@@ -44,6 +54,18 @@ unordered_map<string, string> nameToIdMap;        // Mapping Nama → ID
 ### 2. **Pointer Tree dengan LCRS** (Pointer Tree)
 Pendekatan berbasis pointer dengan pola Left-Child Right-Sibling (LCRS).
 
+> 📚 **Referensi Kuliah & Praktikum:**
+> | Komponen | Pertemuan | Topik |
+> |---|---|---|
+> | Pointer (`*`, `&`, `new`, `delete`) | **Praktikum 1** | Review Pointer — operator `&` dan `*`, alokasi memori dinamis |
+> | `struct CategoryNode` dengan pointer antar node | **Praktikum 3** | Linked List — definisi `struct Node` dengan `Node* next`, traversal via pointer |
+> | `firstChild` & `nextSibling` (pola LCRS) | **Praktikum 3** | Linked List — konsep pointer antar node, insert di awal/akhir, linked list sebagai representasi relasi |
+> | `parent` pointer (navigasi ke atas) | **Praktikum 3** | Linked List — manajemen pointer saat insert dan delete |
+> | Cascading delete rekursif | **Praktikum 3** | Linked List — `deleteLinkedList()`, pembebasan memori node satu per satu |
+> | DFS traversal rekursif via pointer | **Praktikum 10 & 11** | Struktur Data Berhirarki (Tree & BST) — traversal pre-order, in-order, post-order, fungsi rekursif pada tree |
+> | Indeks sekunder `unordered_map<string, CategoryNode*>` | **Praktikum 7** | Hash Table — hash map sebagai indeks untuk akses O(1) |
+> | Alokasi memori dinamis (`new`/`delete`) | **Praktikum 1 & 2** | Pointer & Array Dinamis — `malloc`/`free`, `new`/`delete`, pengelolaan heap |
+
 **Struktur:**
 ```cpp
 struct CategoryNode {
@@ -53,14 +75,14 @@ struct CategoryNode {
     int level;                  // Kedalaman
     bool is_active;             // Status
     
-    CategoryNode* firstChild;   // Pointer ke anak pertama
-    CategoryNode* nextSibling;  // Pointer ke sibling berikutnya
-    CategoryNode* parent;       // Pointer ke parent
+    CategoryNode* firstChild;   // ← Praktikum 3 (Linked List) — anak pertama
+    CategoryNode* nextSibling;  // ← Praktikum 3 (Linked List) — sibling berikutnya
+    CategoryNode* parent;       // ← Praktikum 3 (Linked List) — pointer ke parent
 };
 
-CategoryNode* root;                          // Root node
-unordered_map<string, CategoryNode*> idIndex;        // Mapping ID → Node
-unordered_map<string, CategoryNode*> nameIndex;      // Mapping Nama → Node
+CategoryNode* root;                                      // ← Praktikum 10 & 11 (Tree)
+unordered_map<string, CategoryNode*> idIndex;            // ← Praktikum 7 (Hash Table)
+unordered_map<string, CategoryNode*> nameIndex;          // ← Praktikum 7 (Hash Table)
 ```
 
 **Kompleksitas:**
@@ -73,6 +95,47 @@ unordered_map<string, CategoryNode*> nameIndex;      // Mapping Nama → Node
 | Traversal | O(n) | O(h) |
 
 *\* dengan index sekunder, \*\* dengan index*
+
+---
+
+## 🗺️ Peta Konsep: Struktur Data → Pertemuan Kuliah/Praktikum
+
+Berikut adalah pemetaan menyeluruh antara konsep yang digunakan dalam proyek ini dengan pertemuan kuliah dan praktikum terkait:
+
+```
+PROYEK INI
+│
+├── Pointer & Manajemen Memori ────────────── Praktikum 1
+│     (operator *, &, new, delete, malloc, free)
+│
+├── STL Container
+│     ├── vector<string> (Adjacency List) ─── Praktikum 1 & 2
+│     ├── unordered_map (Hash Map) ─────────── Praktikum 7
+│     └── iterator & algorithm ────────────── Praktikum 1
+│
+├── Struct & Node ──────────────────────────── Praktikum 1
+│     (Category, CategoryNode)
+│
+├── Linked List & Pointer Antar Node ──────── Praktikum 3
+│     (firstChild, nextSibling, parent pointer)
+│     (insertAtEnd, deleteNode, traversal)
+│
+├── Stack (rekursi DFS menggunakan call stack) Praktikum 4
+│     (setiap pemanggilan rekursif DFS = push frame)
+│
+├── Hash Table ─────────────────────────────── Praktikum 7
+│     (categoryMap, nameToIdMap, idIndex, nameIndex)
+│     (Separate Chaining sebagai collision handling)
+│
+├── Graf & DFS ─────────────────────────────── Praktikum 8 & 9
+│     (N-ary Tree sebagai directed acyclic graph)
+│     (DFS untuk traversal, cascading delete, cycle check)
+│
+└── Tree (Hirarki) ─────────────────────────── Praktikum 10 & 11
+      (N-ary Tree = generalisasi Binary Tree)
+      (konsep root, node, leaf, level, depth)
+      (traversal rekursif, operasi insert/delete/search)
+```
 
 ---
 
@@ -373,4 +436,4 @@ IPB University - 2026
 - **Aditya Cahyo Nugroho** (M0403241109)
 - **Zivanka Aurellia Astadewi Maheswari** (M0403241111)
 - **Anisa Nur Rohmah** (M0403241035)
-- **Nazwa Nadya Rahma** (M0403241060)  
+- **Nazwa Nadya Rahma** (M0403241060)
