@@ -1,7 +1,11 @@
 #include "ui.h"
 #include <cstdlib>
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
 #include <sys/stat.h>
+#endif
 
 bool supportsUtf8()
 {
@@ -339,7 +343,11 @@ bool exportBenchmarkCsv(const string &outputFile, const vector<string> &datasetF
     if (datasetFiles.size() != hashResults.size() || datasetFiles.size() != pointerResults.size())
         return false;
     string folder = "output";
+#ifdef _WIN32
+    _mkdir(folder.c_str());
+#else
     mkdir(folder.c_str(), 0755);
+#endif
     ofstream csv(outputFile);
     if (!csv.is_open())
         return false;
