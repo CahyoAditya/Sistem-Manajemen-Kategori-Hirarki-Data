@@ -4,6 +4,7 @@ Sistem manajemen kategori dan subkategori data e-commerce yang membentuk struktu
 
 Sistem ini dirancang untuk menguji, memanipulasi, dan membandingkan performa dua pendekatan struktur data yang berbeda dalam menangani data bertingkat berskala besar (hingga 10.000 node).
 
+Note: Nanti UTF-8 ganti full ke ASCII agar OS Windows dapat berjalan dengan baik
 ---
 
 ## 🧠 Struktur Data yang Digunakan
