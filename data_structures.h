@@ -74,6 +74,7 @@ struct BenchmarkResult
 bool isValidCategoryId(const string &id);
 bool isValidCategoryName(const string &name);
 size_t estimateMemoryUsageKB(size_t nodeCount);
+size_t getProcessMemoryUsageKB();
 vector<Category> loadCategoryListFromJson(const string &filename);
 DatasetLoadResult loadDatasetFromJsonFile(const string &filename);
 void calculateDatasetStats(const vector<Category> &categories, AppState &state);

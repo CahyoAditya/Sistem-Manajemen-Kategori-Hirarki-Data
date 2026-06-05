@@ -159,7 +159,7 @@ void printHeader(StructureType active, size_t nodeCount, double loadTimeMs, cons
     cout << "\n";
     vector<string> lines;
     lines.push_back("SISTEM MANAJEMEN KATEGORI & HIRARKI DATA");
-    lines.push_back("Struktur Data P4 — Kelompok 10 — IPB University 2026");
+    lines.push_back("Struktur Data P4 - Kelompok 10 - IPB University 2026");
     printBoxedContent(lines);
 
     cout << getBoxTopBorder() << "\n";
@@ -411,6 +411,7 @@ bool exportBenchmarkCsv(const string &outputFile, const vector<string> &datasetF
         csv << "Search," << label << "," << hashResults[i].search << "," << pointerResults[i].search << "\n";
         csv << "Traversal," << label << "," << hashResults[i].traversal << "," << pointerResults[i].traversal << "\n";
         csv << "Delete," << label << "," << hashResults[i].remove << "," << pointerResults[i].remove << "\n";
+        csv << "Memory," << label << "," << hashResults[i].memKb << "," << pointerResults[i].memKb << "\n";
     }
     csv.close();
     return true;

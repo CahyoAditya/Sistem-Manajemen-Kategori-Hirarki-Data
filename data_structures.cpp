@@ -1,5 +1,10 @@
 #include "data_structures.h"
 #include "json.hpp"
+#include <sstream>
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#endif
 
 using namespace std;
 using json = nlohmann::json;
@@ -27,6 +32,35 @@ size_t estimateMemoryUsageKB(size_t nodeCount)
 {
     const size_t estimatedPerNodeBytes = 120;
     return (nodeCount * estimatedPerNodeBytes) / 1024;
+}
+
+size_t getProcessMemoryUsageKB()
+{
+#ifdef _WIN32
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
+    {
+        return pmc.WorkingSetSize / 1024;
+    }
+    return 0;
+#else
+    ifstream status("/proc/self/status");
+    if (!status.is_open())
+        return 0;
+    string line;
+    while (getline(status, line))
+    {
+        if (line.find("VmRSS:") == 0)
+        {
+            stringstream ss(line);
+            string label;
+            size_t value;
+            ss >> label >> value;
+            return value;
+        }
+    }
+    return 0;
+#endif
 }
 
 void CategoryMapManager::deleteRecursive(const string &id)
@@ -837,28 +871,32 @@ void removeCategoriesFromDataset(vector<Category> &dataset, const unordered_set<
 BenchmarkResult benchmarkStructure(const vector<Category> &categories, StructureType type, int repeat)
 {
     BenchmarkResult result;
-    result.memKb = estimateMemoryUsageKB(categories.size());
     result.label = to_string(categories.size()) + " node";
-
+ 
     vector<double> buildTimes;
     vector<double> insertTimes;
     vector<double> searchTimes;
     vector<double> traversalTimes;
     vector<double> deleteTimes;
-
+    vector<double> memoryUsages;
+ 
     string sampleId = categories.empty() ? string() : categories.front().id;
     string sampleName = categories.empty() ? string() : categories.front().name;
-
+ 
     for (int run = 0; run < repeat; ++run)
     {
         if (type == StructureType::HashMapTree)
         {
+            size_t memBefore = getProcessMemoryUsageKB();
             CategoryMapManager manager;
             auto startBuild = chrono::high_resolution_clock::now();
             manager.loadDataFromVector(categories);
             auto endBuild = chrono::high_resolution_clock::now();
+            size_t memAfter = getProcessMemoryUsageKB();
+            double memDiff = (memAfter > memBefore) ? (double)(memAfter - memBefore) : 0.0;
+            memoryUsages.push_back(memDiff);
             buildTimes.push_back(chrono::duration<double, milli>(endBuild - startBuild).count());
-
+ 
             if (!sampleId.empty())
             {
                 string insertId = "BM_INS_" + to_string(run);
@@ -866,17 +904,17 @@ BenchmarkResult benchmarkStructure(const vector<Category> &categories, Structure
                 manager.insertCategoryRaw(insertId, "BenchmarkInsert", sampleId);
                 auto endInsert = chrono::high_resolution_clock::now();
                 insertTimes.push_back(chrono::duration<double, milli>(endInsert - startInsert).count());
-
+ 
                 auto startSearch = chrono::high_resolution_clock::now();
                 manager.exists(sampleId);
                 auto endSearch = chrono::high_resolution_clock::now();
                 searchTimes.push_back(chrono::duration<double, milli>(endSearch - startSearch).count());
-
+ 
                 auto startTraversal = chrono::high_resolution_clock::now();
                 manager.countSubtreeNodes(sampleId);
                 auto endTraversal = chrono::high_resolution_clock::now();
                 traversalTimes.push_back(chrono::duration<double, milli>(endTraversal - startTraversal).count());
-
+ 
                 auto startDelete = chrono::high_resolution_clock::now();
                 manager.deleteCategoryRaw(sampleId);
                 auto endDelete = chrono::high_resolution_clock::now();
@@ -885,12 +923,16 @@ BenchmarkResult benchmarkStructure(const vector<Category> &categories, Structure
         }
         else
         {
+            size_t memBefore = getProcessMemoryUsageKB();
             CategoryPointerTree tree;
             auto startBuild = chrono::high_resolution_clock::now();
             tree.loadDataFromVector(categories);
             auto endBuild = chrono::high_resolution_clock::now();
+            size_t memAfter = getProcessMemoryUsageKB();
+            double memDiff = (memAfter > memBefore) ? (double)(memAfter - memBefore) : 0.0;
+            memoryUsages.push_back(memDiff);
             buildTimes.push_back(chrono::duration<double, milli>(endBuild - startBuild).count());
-
+ 
             if (!sampleId.empty())
             {
                 string insertId = "BM_INS_" + to_string(run);
@@ -898,17 +940,17 @@ BenchmarkResult benchmarkStructure(const vector<Category> &categories, Structure
                 tree.insertCategory(insertId, "BenchmarkInsert", sampleId);
                 auto endInsert = chrono::high_resolution_clock::now();
                 insertTimes.push_back(chrono::duration<double, milli>(endInsert - startInsert).count());
-
+ 
                 auto startSearch = chrono::high_resolution_clock::now();
                 tree.exists(sampleId);
                 auto endSearch = chrono::high_resolution_clock::now();
                 searchTimes.push_back(chrono::duration<double, milli>(endSearch - startSearch).count());
-
+ 
                 auto startTraversal = chrono::high_resolution_clock::now();
                 tree.countSubtreeNodes(sampleId);
                 auto endTraversal = chrono::high_resolution_clock::now();
                 traversalTimes.push_back(chrono::duration<double, milli>(endTraversal - startTraversal).count());
-
+ 
                 auto startDelete = chrono::high_resolution_clock::now();
                 tree.deleteCategory(sampleId);
                 auto endDelete = chrono::high_resolution_clock::now();
@@ -916,18 +958,23 @@ BenchmarkResult benchmarkStructure(const vector<Category> &categories, Structure
             }
         }
     }
-
+ 
     auto medianValue = [&](vector<double> values) -> double {
         if (values.empty())
             return 0.0;
         sort(values.begin(), values.end());
         return values[values.size() / 2];
     };
-
+ 
     result.build = medianValue(move(buildTimes));
     result.insert = medianValue(move(insertTimes));
     result.search = medianValue(move(searchTimes));
     result.traversal = medianValue(move(traversalTimes));
     result.remove = medianValue(move(deleteTimes));
+    result.memKb = medianValue(move(memoryUsages));
+    if (result.memKb <= 0.0)
+    {
+        result.memKb = estimateMemoryUsageKB(categories.size());
+    }
     return result;
 }

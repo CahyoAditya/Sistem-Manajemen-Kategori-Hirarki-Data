@@ -1,1 +1,20 @@
-null
+{
+    "P001": {
+        "child_ids": [
+            "P002"
+        ],
+        "id": "P001",
+        "is_active": true,
+        "level": 1,
+        "name": "Elektronik",
+        "parent_id": ""
+    },
+    "P002": {
+        "child_ids": [],
+        "id": "P002",
+        "is_active": true,
+        "level": 2,
+        "name": "HP",
+        "parent_id": "P001"
+    }
+}

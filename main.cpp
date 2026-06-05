@@ -24,8 +24,8 @@ int main()
         cout << border << "  [1] Pilih Struktur Data" << repeatChar(' ', 37) << border << "\n";
         cout << border << "  [2] Manajemen Kategori" << repeatChar(' ', 38) << border << "\n";
         cout << border << "  [3] Benchmark & Perbandingan" << repeatChar(' ', 32) << border << "\n";
-        cout << border << "  [4] Dataset" << repeatChar(' ', 50) << border << "\n";
-        cout << border << "  [0] Keluar" << repeatChar(' ', 51) << border << "\n";
+        cout << border << "  [4] Dataset" << repeatChar(' ', 49) << border << "\n";
+        cout << border << "  [0] Keluar" << repeatChar(' ', 50) << border << "\n";
         cout << getBoxBottomBorder() << "\n";
         cout << "  Pilih menu: ";
 
@@ -157,6 +157,7 @@ int main()
                     state.dataset.push_back(Category{id, name, parentId, level, true, {}});
                     calculateDatasetStats(state.dataset, state);
                     buildActiveStructures(state, hashManager, pointerTree);
+                    hashManager.saveData();
                     printSuccess("Kategori berhasil ditambahkan.");
                 }
             }
@@ -323,6 +324,7 @@ int main()
                 removeCategoriesFromDataset(state.dataset, removeSet);
                 calculateDatasetStats(state.dataset, state);
                 buildActiveStructures(state, hashManager, pointerTree);
+                hashManager.saveData();
                 printSuccess("Kategori dan seluruh turunannya dihapus.");
                 cout << "  Node dihapus  : " << impacted << "\n";
                 cout << "  Node tersisa : " << state.nodeCount << "\n";
