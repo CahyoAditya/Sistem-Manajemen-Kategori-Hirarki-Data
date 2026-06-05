@@ -157,4 +157,4 @@ public:
     bool deleteCategory(const string &id);
 };
 
-#endif // DATA_STRUCTURES_H
+#endif

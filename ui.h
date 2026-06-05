@@ -42,4 +42,4 @@ void printBenchmarkComparison(const BenchmarkResult &hashResult, const Benchmark
 bool exportBenchmarkCsv(const string &outputFile, const vector<string> &datasetFiles, const vector<BenchmarkResult> &hashResults, const vector<BenchmarkResult> &pointerResults);
 void benchmarkMenu();
 
-#endif // UI_H
+#endif
