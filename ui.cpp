@@ -313,7 +313,7 @@ void printBenchmarkSummary(const vector<BenchmarkResult> &results, const string 
         cout << "  ╠═══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣\n";
         for (const auto &row : results)
         {
-            cout << " ║ " << left << setw(13) << row.label
+            cout << "  ║ " << left << setw(13) << row.label
                  << " ║ " << right << setw(10) << fixed << setprecision(3) << row.build
                  << " ║ " << setw(10) << row.insert
                  << " ║ " << setw(10) << row.search
@@ -329,7 +329,7 @@ void printBenchmarkSummary(const vector<BenchmarkResult> &results, const string 
         cout << "  +---------------+--------------+--------------+--------------+--------------+--------------+\n";
         for (const auto &row : results)
         {
-            cout << " | " << left << setw(13) << row.label
+            cout << "  | " << left << setw(13) << row.label
                  << " | " << right << setw(10) << fixed << setprecision(3) << row.build
                  << " | " << setw(10) << row.insert
                  << " | " << setw(10) << row.search
@@ -359,14 +359,14 @@ void printBenchmarkComparison(const BenchmarkResult &hashResult, const Benchmark
         double diff = pointerValue - hashValue;
         if (supportsUtf8())
         {
-            cout << " ║ " << left << setw(12) << label
+            cout << "  ║ " << left << setw(12) << label
                  << " ║ " << right << setw(18) << fixed << setprecision(3) << hashValue
                  << " ║ " << setw(18) << pointerValue
                  << " ║ " << setw(8) << showpos << fixed << setprecision(3) << diff << noshowpos << " ║\n";
         }
         else
         {
-            cout << " | " << left << setw(12) << label
+            cout << "  | " << left << setw(12) << label
                  << " | " << right << setw(18) << fixed << setprecision(3) << hashValue
                  << " | " << setw(18) << pointerValue
                  << " | " << setw(8) << showpos << fixed << setprecision(3) << diff << noshowpos << " |\n";
