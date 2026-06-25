@@ -1,20 +1,20 @@
 {
-    "P001": {
+    "001": {
         "child_ids": [
-            "P002"
+            "002"
         ],
-        "id": "P001",
+        "id": "001",
         "is_active": true,
         "level": 1,
-        "name": "Elektronik",
+        "name": "root",
         "parent_id": ""
     },
-    "P002": {
+    "002": {
         "child_ids": [],
-        "id": "P002",
-        "is_active": true,
+        "id": "002",
+        "is_active": false,
         "level": 2,
-        "name": "HP",
-        "parent_id": "P001"
+        "name": "anak",
+        "parent_id": "001"
     }
 }

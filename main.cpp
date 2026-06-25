@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <limits>
 #include "ui.h"
@@ -72,11 +73,12 @@ int main()
                 "[2] Cari Kategori",
                 "[3] Tampilkan Hierarki",
                 "[4] Hapus Kategori",
+                "[5] Aktifkan/Nonaktifkan Kategori",
                 "[0] Kembali"
             };
             printMenuItemsBoxed(categMenuItems);
             cout << "  Pilihan: ";
-            int subChoice = getMenuChoice(0, 4);
+            int subChoice = getMenuChoice(0, 5);
             if (subChoice == 1)
             {
                 printMenuTitle("TAMBAH KATEGORI");
@@ -328,6 +330,104 @@ int main()
                 printSuccess("Kategori dan seluruh turunannya dihapus.");
                 cout << "  Node dihapus  : " << impacted << "\n";
                 cout << "  Node tersisa : " << state.nodeCount << "\n";
+            }
+            else if (subChoice == 5)
+            {
+                printMenuTitle("AKTIFKAN/NONAKTIFKAN KATEGORI");
+                cout << "  Masukkan ID Kategori: ";
+                string id;
+                getline(cin, id);
+                id = trim(id);
+                bool exists = hashManager.exists(id) || pointerTree.exists(id);
+                if (!exists)
+                {
+                    printError("Kategori '" + id + "' tidak ditemukan.");
+                    continue;
+                }
+
+                bool currentStatus = false;
+                if (state.activeStructure == StructureType::HashMapTree)
+                {
+                    const Category *cat = hashManager.getCategory(id);
+                    if (cat != nullptr)
+                        currentStatus = cat->is_active;
+                }
+                else
+                {
+                    CategoryNode *node = pointerTree.findNode(id);
+                    if (node != nullptr)
+                        currentStatus = node->is_active;
+                }
+
+                cout << "  Target : [" << id << "]\n";
+                cout << "  Status saat ini: " << (currentStatus ? "Aktif" : "Non-Aktif") << "\n";
+                
+                string targetStatusStr = currentStatus ? "Non-Aktif" : "Aktif";
+                if (!confirmPrompt("  Ubah status menjadi " + targetStatusStr + "? (y/n): "))
+                    continue;
+
+                if (currentStatus)
+                {
+                    vector<string> affectedIds;
+                    if (state.activeStructure == StructureType::HashMapTree)
+                    {
+                        collectSubtreeIdsHashMap(hashManager, id, affectedIds);
+                    }
+                    else
+                    {
+                        CategoryNode *node = pointerTree.findNode(id);
+                        collectSubtreeIdsPointerTree(node, affectedIds);
+                    }
+
+                    unordered_set<string> affectedSet(affectedIds.begin(), affectedIds.end());
+                    for (auto &cat : state.dataset)
+                    {
+                        if (affectedSet.count(cat.id) > 0)
+                        {
+                            cat.is_active = false;
+                        }
+                    }
+                    printSuccess("Kategori [" + id + "] dan " + to_string(affectedIds.size() - 1) + " subkategori di bawahnya berhasil dinonaktifkan.");
+                }
+                else
+                {
+                    unordered_set<string> ancestorsToActivate;
+                    string currentParent = id;
+                    
+                    unordered_map<string, string> parentMap;
+                    for (const auto &cat : state.dataset)
+                    {
+                        parentMap[cat.id] = cat.parent_id;
+                    }
+
+                    while (!currentParent.empty() && parentMap.count(currentParent) > 0)
+                    {
+                        ancestorsToActivate.insert(currentParent);
+                        currentParent = parentMap[currentParent];
+                    }
+
+                    int activatedCount = 0;
+                    for (auto &cat : state.dataset)
+                    {
+                        if (ancestorsToActivate.count(cat.id) > 0)
+                        {
+                            if (!cat.is_active)
+                            {
+                                cat.is_active = true;
+                                activatedCount++;
+                            }
+                        }
+                    }
+                    printSuccess("Kategori [" + id + "] berhasil diaktifkan.");
+                    if (activatedCount > 1)
+                    {
+                        printSuccess(to_string(activatedCount - 1) + " kategori leluhur (ancestor) otomatis diaktifkan agar dapat diakses.");
+                    }
+                }
+
+                calculateDatasetStats(state.dataset, state);
+                buildActiveStructures(state, hashManager, pointerTree);
+                hashManager.saveData();
             }
         }
         else if (choice == 3)

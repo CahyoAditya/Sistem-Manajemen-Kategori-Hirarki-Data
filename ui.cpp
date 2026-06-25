@@ -228,7 +228,7 @@ void printMenuItemsBoxed(const vector<string> &items)
 void printHashMapTreeUI(const CategoryMapManager &manager, const string &id, const string &prefix, bool isLast, int depthLimit, int currentDepth)
 {
     const Category *cat = manager.getCategory(id);
-    if (cat == nullptr)
+    if (cat == nullptr || !cat->is_active)
         return;
 
     cout << prefix << branchPrefix(isLast) << "[" << cat->id << "] " << truncateText(cat->name, 40) << "\n";
@@ -245,7 +245,7 @@ void printHashMapTreeUI(const CategoryMapManager &manager, const string &id, con
 
 void printPointerTreeUI(const CategoryPointerTree &tree, CategoryNode *node, const string &prefix, bool isLast, int depthLimit, int currentDepth)
 {
-    if (node == nullptr)
+    if (node == nullptr || !node->is_active)
         return;
 
     cout << prefix << branchPrefix(isLast) << "[" << node->id << "] " << truncateText(node->name, 40) << "\n";
